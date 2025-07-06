@@ -1,0 +1,1 @@
+export const DB_NAME = "air_quality_index";
