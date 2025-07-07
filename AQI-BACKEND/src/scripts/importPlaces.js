@@ -15,7 +15,7 @@ console.log("MONGODB_URI from .env:");
 
 
 
-const rawData = fs.readFileSync("./src/scripts/places.json", "utf-8");
+const rawData = fs.readFileSync("./src/places.json", "utf-8");
 const rawPlaces = JSON.parse(rawData);
 
 const run = async () => {

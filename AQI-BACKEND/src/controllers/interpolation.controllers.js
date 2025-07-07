@@ -55,9 +55,13 @@ const getEstimatedAQI = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No AQI data found to estimate.");
   }
 
-  
   const rawAQI = result.aqi ?? result.estimatedAQI;
+  const isEstimated =
+    result.estimatedAQI !== undefined ||
+    (note && note.toLowerCase().includes("estimated"));
+
   const advisory = getAQIAdvisory(rawAQI);
+
 
   res.status(200).json(
     new ApiResponse(
@@ -66,9 +70,12 @@ const getEstimatedAQI = asyncHandler(async (req, res) => {
         ...result,
         advisory,
         note,
+        estimated: isEstimated,
         timestamp: result.nearestStation?.timestamp || new Date().toISOString(),
       },
-      "Estimated AQI calculated successfully."
+      isEstimated
+        ? "Estimated AQI calculated successfully."
+        : "Official AQI retrieved from nearest station."
     )
   );
 });

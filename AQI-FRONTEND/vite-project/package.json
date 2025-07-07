@@ -10,10 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^5.0.3",
     "axios": "^1.10.0",
     "date-fns": "^4.1.0",
+    "leaflet": "^1.9.4",
+    "mapbox-gl": "^3.13.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-is": "^19.1.0",
+    "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.6.3",
     "recharts": "^3.0.2"
   },

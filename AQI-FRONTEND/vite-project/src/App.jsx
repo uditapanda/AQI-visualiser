@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import MapPage from "./features/map/MapPage";
 
 // Components
 import Header from "./components/Header";
@@ -9,7 +10,7 @@ import Footer from "./components/Footer";
 import AQIPage from "./features/aqi/AQIPage";
 import ForecastPage from "./features/forecast/ForecastPage";
 import HistoryPage from "./features/history/HistoryPage";
-import AQIMap from "./features/map/AQIMap";
+
 
 const App = () => {
   return (
@@ -21,7 +22,7 @@ const App = () => {
           <Route path="/" element={<AQIPage />} />
           <Route path="/forecast" element={<ForecastPage />} />
           <Route path="/history" element={<HistoryPage />} />
-          <Route path="/map" element={<AQIMap />} />
+          <Route path="/map" element={<MapPage />} />
           <Route path="*" element={<h2>404 - Page Not Found</h2>} />
         </Routes>
       </main>

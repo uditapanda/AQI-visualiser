@@ -40,7 +40,7 @@ const ForecastPage = () => {
       <form onSubmit={handleSubmit} style={{ marginBottom: "1.5rem", display: "flex", gap: "0.8rem" }}>
         <input
           type="text"
-          placeholder="Enter city (e.g. Delhi)"
+          placeholder="Enter place name"
           value={city}
           onChange={(e) => setCity(e.target.value)}
           style={{

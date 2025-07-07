@@ -58,16 +58,40 @@ const AQICard = ({ data }) => {
         AQI {aqi}
       </span>
 
-      <h3
+      <div
         style={{
-          margin: "0 0 0.8em 0",
-          fontWeight: 700,
-          fontSize: "1.7em",
-          letterSpacing: 1,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.6rem",
+          marginBottom: "0.8em",
         }}
       >
-        {city}
-      </h3>
+        <h3
+          style={{
+            margin: 0,
+            fontWeight: 700,
+            fontSize: "1.7em",
+            letterSpacing: 1,
+          }}
+        >
+          {city}
+        </h3>
+
+        <span
+          style={{
+            backgroundColor: estimated ? "#ffc107" : "#4caf50",
+            color: estimated ? "#000" : "#fff",
+            fontWeight: 600,
+            fontSize: "0.75rem",
+            padding: "2px 8px",
+            borderRadius: "6px",
+            marginTop: "0.2rem",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+          }}
+        >
+          {estimated ? "Estimated" : "Official"}
+        </span>
+      </div>
 
       {estimated && (
         <div
@@ -86,18 +110,17 @@ const AQICard = ({ data }) => {
       <div style={{ fontSize: "1.1em", opacity: 0.93, marginBottom: "0.5em" }}>
         <span style={{ fontWeight: 500, color: "#222" }}>Date:</span>{" "}
         <span>
-          {timestamp ? new Date(timestamp).toLocaleDateString("en-GB") : "N/A"}
+          {new Date().toLocaleDateString("en-GB", { timeZone: "Asia/Kolkata" })}
         </span>
       </div>
       <div style={{ fontSize: "1em", opacity: 0.85 }}>
         <span style={{ fontWeight: 500, color: "#222" }}>Time:</span>{" "}
         <span>
-          {timestamp
-            ? new Date(timestamp).toLocaleTimeString("en-GB", {
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "N/A"}
+          {new Date().toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "Asia/Kolkata",
+          })}
         </span>
       </div>
 

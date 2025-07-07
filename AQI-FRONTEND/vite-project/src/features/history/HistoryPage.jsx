@@ -24,7 +24,7 @@ const HistoryPage = () => {
       >
         <input
           type="text"
-          placeholder="Enter city (e.g. Kolkata)"
+          placeholder="Enter place name"
           value={city}
           onChange={(e) => setCity(e.target.value)}
           style={{
