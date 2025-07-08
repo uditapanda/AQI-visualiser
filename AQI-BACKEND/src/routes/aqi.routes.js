@@ -18,7 +18,7 @@ router.get("/location/:lat/:lng", validateCoordinates, getAQIByLocation);
 router.get("/history/:city", getAQIHistory);
 
 
-router.route("/by-id/:id")
+router.route("/:id")
   .get(validateObjectId, getSingleAQI)
   .put(validateObjectId, updateAQI)
   .delete(validateObjectId, deleteAQI);

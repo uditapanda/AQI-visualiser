@@ -16,6 +16,10 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+import heatmapRoutes from "./routes/heatmap.routes.js";
+
+app.use("/api/v1/heatmap", heatmapRoutes);
+
 import aqiRouter from "./routes/aqi.routes.js";
 
 app.use("/api/v1/aqi", aqiRouter);

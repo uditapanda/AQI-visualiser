@@ -11,7 +11,6 @@ import AQIPage from "./features/aqi/AQIPage";
 import ForecastPage from "./features/forecast/ForecastPage";
 import HistoryPage from "./features/history/HistoryPage";
 
-
 const App = () => {
   return (
     <Router>

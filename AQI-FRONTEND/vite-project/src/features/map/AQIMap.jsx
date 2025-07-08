@@ -4,6 +4,7 @@ import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Spinner from "../../components/Spinner";
+import { showAQIToast } from "../../utils/showAQIToast";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -77,10 +78,30 @@ const AQIMap = () => {
     const fetchEstimatedAQI = async (lat, lng, placeName) => {
       setLoadingEstimate(true);
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/aqi/estimate?lat=${lat}&lng=${lng}`
+        const city = placeName?.split(",")[0]?.trim() || "Unknown";
+        console.log("Trying to fetch official AQI for:", city);
+        
+        const officialRes = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/v1/aqi/latest/${city}`
         );
-        if (!res.ok) throw new Error("Bad response");
+        const officialData = await officialRes.json();
+
+        if (officialRes.ok && officialData?.data) {
+          const { aqi, advisory } = officialData.data;
+          const finalAQI = aqi ?? "N/A";
+
+          map.flyTo({ center: [lng, lat], zoom: 10 });
+          addAQIMarker(map, [lng, lat], placeName, finalAQI, advisory);
+          if (aqi != null) showAQIToast(aqi);
+          return;
+        }
+
+        const res = await fetch(
+          `${
+            import.meta.env.VITE_BACKEND_URL
+          }/api/v1/aqi/estimate?lat=${lat}&lng=${lng}`
+        );
+        if (!res.ok) throw new Error("Estimation failed");
 
         const data = await res.json();
         const { aqi, advisory } = data.data;
@@ -88,6 +109,7 @@ const AQIMap = () => {
 
         map.flyTo({ center: [lng, lat], zoom: 10 });
         addAQIMarker(map, [lng, lat], placeName, finalAQI, advisory);
+        if (aqi != null) showAQIToast(aqi);
       } catch (err) {
         console.error("Failed to fetch AQI:", err);
         alert("Could not fetch AQI for this location!");

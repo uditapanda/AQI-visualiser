@@ -60,9 +60,9 @@ const fetchCPCB = async () => {
       const value = parseFloat(entry.avg_value);
 
       if (isNaN(value)) {
-        console.warn(
+       /* console.warn(
           `Skipping invalid avg_value for ${param} at ${entry.station}, ${entry.city} — got "${entry.avg_value}"`
-        );
+        );*/
         continue;
       }
 
@@ -87,9 +87,9 @@ const fetchCPCB = async () => {
         station.so2 !== null;
 
       if (!hasAnyPollutant) {
-        console.log(
+        /*console.log(
           `Skipping ${station.city} (${station.station || "unknown station"}): no pollutant data`
-        );
+        );*/
         skippedCount++;
         continue;
       }
@@ -125,17 +125,17 @@ const fetchCPCB = async () => {
       });
 
       if (isTrulyDuplicate) {
-        console.log(
+        /*console.log(
           `Skipped strict duplicate for ${station.city} (${station.station}) at ${station.timestamp.toISOString()}`
-        );
+        );*/
         skippedCount++;
         continue;
       }
 
       await AQI.create(station);
-      console.log(
+      /*console.log(
         `Inserted AQI for ${station.city} (${station.station || "unknown station"})`
-      );
+      );*/
       insertedCount++;
     }
 

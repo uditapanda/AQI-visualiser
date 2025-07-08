@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { fetchForecastByCity } from "../../services/api";
+import React, { useState, useEffect } from "react";
+import { fetchForecastByCity, searchPlaces } from "../../services/api";
 import {
   LineChart,
   Line,
@@ -10,39 +10,83 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+let debounceTimer;
+
 const ForecastPage = () => {
-  const [city, setCity] = useState("");
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [forecastData, setForecastData] = useState(null);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setForecastData(null);
-
-    if (!city.trim()) {
-      setError("Please enter a city name.");
+  useEffect(() => {
+    if (query.trim().length < 3) {
+      setSuggestions([]);
       return;
     }
 
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+      try {
+        const results = await searchPlaces(query.trim());
+        setSuggestions(results);
+      } catch (err) {
+        console.error("Search error:", err);
+        setSuggestions([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [query]);
+
+  const handleSelect = async (place) => {
+    const city = place.name?.split(",")[0]?.trim() || query;
+    setQuery(place.name);
+    setSuggestions([]);
+
     try {
-      const response = await fetchForecastByCity(city.trim());
-      setForecastData(response.data.data);
+      const res = await fetchForecastByCity(city);
+      setForecastData(res.data.data);
+      setError("");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch forecast data.");
+      setForecastData(null);
+      setError(err.response?.data?.message || "Failed to fetch forecast.");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSuggestions([]);
+    setForecastData(null);
+    setError("");
+
+    if (!query.trim()) return setError("Please enter a location.");
+
+    try {
+      const results = await searchPlaces(query.trim());
+      if (results.length === 0) {
+        setError("No such place found.");
+        return;
+      }
+      handleSelect(results[0]);
+    } catch (err) {
+      console.error("Submit error:", err);
+      setError("Search failed.");
     }
   };
 
   return (
-    <div className="aqi-page">
+    <div className="aqi-page" style={{ position: "relative" }}>
       <h2>Forecast AQI</h2>
 
       <form onSubmit={handleSubmit} style={{ marginBottom: "1.5rem", display: "flex", gap: "0.8rem" }}>
         <input
           type="text"
-          placeholder="Enter place name"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
+          placeholder="Enter city/village name"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setError("");
+          }}
           style={{
             padding: "0.7rem 1rem",
             borderRadius: "0.6rem",
@@ -56,12 +100,52 @@ const ForecastPage = () => {
         </button>
       </form>
 
+      {suggestions.length > 0 && (
+        <ul
+          style={{
+            position: "absolute",
+            top: "125px",
+            left: 0,
+            right: 0,
+            background: "#fff",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            listStyle: "none",
+            padding: 0,
+            zIndex: 1000,
+            maxHeight: "220px",
+            overflowY: "auto",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+          }}
+        >
+          {suggestions.map((s, i) => (
+            <li
+              key={i}
+              onClick={() => handleSelect(s)}
+              style={{
+                padding: "0.8rem 1rem",
+                borderBottom: "1px solid #f2f2f2",
+                cursor: "pointer",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#f0f8ff")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#fff")
+              }
+            >
+              {s.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
       {error && <p style={{ color: "crimson", fontWeight: 600 }}>{error}</p>}
 
       {forecastData && (
         <>
           <div className="aqi-card aqi-card-animate">
-            <h3 style={{ marginBottom: "0.8em" }}>Forecast for {city}</h3>
+            <h3 style={{ marginBottom: "0.8em" }}>Forecast for {query}</h3>
             <p><strong>Trend:</strong> {forecastData.trend}</p>
             <p><strong>Method:</strong> {forecastData.method}</p>
             <h4 style={{ marginTop: "1rem", marginBottom: "0.5rem" }}>Based On:</h4>

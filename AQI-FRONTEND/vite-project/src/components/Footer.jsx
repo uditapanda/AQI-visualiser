@@ -20,7 +20,7 @@ const Footer = () => {
       }}
     >
       <span>
-        Made with <span style={{ color: "#ff6b81", fontSize: "1.2em" }}>♥</span> by <b>Udita</b>
+        Made with <span style={{ color: "#ff6b81", fontSize: "1.2em" }}>♥</span><b></b>
       </span>
       <span style={{ fontSize: "0.95em", opacity: 0.8 }}>
         &copy; {new Date().getFullYear()} AQI Visualizer
