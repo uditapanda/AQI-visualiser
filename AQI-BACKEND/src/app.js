@@ -20,12 +20,6 @@ import aqiRouter from "./routes/aqi.routes.js";
 
 app.use("/api/v1/aqi", aqiRouter);
 
-import heatmapRouter from "./routes/heatmap.routes.js";
-
-console.log("heatmapRouter loaded");
-
-app.use("/api/v1/heatmap", heatmapRouter);
-
 import forecastRoutes from "./routes/forecast.routes.js";
 
 app.use("/api/v1/forecast", forecastRoutes);
