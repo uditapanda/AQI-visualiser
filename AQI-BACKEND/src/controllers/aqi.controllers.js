@@ -178,15 +178,6 @@ const stats = await AQI.aggregate([
     );
 });
 
-export const getAllAQIPoints = async (req, res) => {
-  try {
-    const points = await AQI.find({}, "city lat lng aqi").limit(1000);
-    res.json(points);
-  } catch (err) {
-    console.error("Error fetching AQI points:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
 
 const getAQIHistory = asyncHandler(async (req, res) => {
   const city = req.params.city?.trim().toLowerCase();
