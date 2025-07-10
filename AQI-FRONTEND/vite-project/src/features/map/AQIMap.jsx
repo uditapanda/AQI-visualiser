@@ -75,12 +75,65 @@ const AQIMap = () => {
 
     map.addControl(geocoder);
 
+    map.on("load", async () => {
+      try {
+        const response = await fetch("http://localhost:8000/heatmap_dump.json");
+        const geojson = await response.json();
+
+        map.addSource("heatmap", {
+          type: "geojson",
+          data: geojson,
+        });
+
+        map.addLayer({
+          id: "heatmap-layer",
+          type: "heatmap",
+          source: "heatmap",
+          paint: {
+            "heatmap-weight": [
+              "interpolate",
+              ["linear"],
+              ["get", "aqi"],
+              0,
+              0,
+              500,
+              1,
+            ],
+            "heatmap-intensity": 1.2,
+            "heatmap-radius": 18,
+            "heatmap-opacity": 0.8,
+            "heatmap-color": [
+              "interpolate",
+              ["linear"],
+              ["heatmap-density"],
+              0,
+              "rgba(0,0,0,0)",
+              0.2,
+              "#4caf50",
+              0.4,
+              "#ffeb3b",
+              0.6,
+              "#ff9800",
+              0.8,
+              "#f44336",
+              1,
+              "#880e4f",
+            ],
+          },
+        });
+
+        console.log("Heatmap loaded!");
+      } catch (err) {
+        console.error("Failed to load heatmap_dump.json:", err);
+      }
+    });
+
     const fetchEstimatedAQI = async (lat, lng, placeName) => {
       setLoadingEstimate(true);
       try {
         const city = placeName?.split(",")[0]?.trim() || "Unknown";
         console.log("Trying to fetch official AQI for:", city);
-        
+
         const officialRes = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/v1/aqi/latest/${city}`
         );
