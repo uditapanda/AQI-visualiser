@@ -10,16 +10,37 @@ cron.schedule("*/30 * * * *", async () => {
   await fetchCPCB();
 });
 
-
 cron.schedule("0 0 * * *", () => {
   const now = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
   console.log(`[${now}] Running daily heatmap estimation job...`);
 
-  exec("node scripts/generateHeatmapData.js", (err, stdout, stderr) => {
+  exec("node src/scripts/generateHeatmapData.js", (err, stdout, stderr) => {
     if (err) {
       console.error("Heatmap cron failed:", err);
     } else {
       console.log("Heatmap cron success:\n", stdout);
+
+      exec(
+        "node src/scripts/deleteOldHeatmapPoints.js",
+        (err2, stdout2, stderr2) => {
+          if (err2) {
+            console.error("Old heatmap deletion failed:", err2);
+          } else {
+            console.log("Old heatmap deletion success:\n", stdout2);
+
+            exec(
+              "node src/scripts/updateHeatmapDump.js",
+              (err3, stdout3, stderr3) => {
+                if (err3) {
+                  console.error("Heatmap dump update failed:", err3);
+                } else {
+                  console.log("Heatmap dump updated:\n", stdout3);
+                }
+              }
+            );
+          }
+        }
+      );
     }
   });
 });
